@@ -146,18 +146,13 @@ class BIP32Ed25519:
 
 
     def mnemonic_to_seed(self, mnemonic, passphrase='', prefix=u'mnemonic'):  
-    
         seed = hashlib.pbkdf2_hmac('sha512', _NFKDbytes(mnemonic), _NFKDbytes(prefix+passphrase), 2048)
         return seed
 
     def derive_seed(self, path, seed):
-        print("Compute path  %s"%path)
-        print("Compute mster %s"%seed)
         root = self.root_key_slip10(seed)
         node = root
         for i in path:
-            print("Path: %s"%i)
-
             node = self.private_child_key(node, i)
             ((kLP, kRP), AP, cP) = node
             trace("Node %d"%i)
@@ -170,7 +165,7 @@ class BIP32Ed25519:
     def derive_mnemonic(self, path, mnemonic, passphrase='', prefix=u'mnemonic'):
 
         seed = self.mnemonic_to_seed(mnemonic, passphrase, prefix)
-        return self.derive_seed2(path, seed)
+        return self.derive_seed(path, seed)
 
 if __name__ == "__main__":
     print("*************************************")
@@ -180,9 +175,9 @@ if __name__ == "__main__":
         0x80000000 | 0,
         0,
         0]
-    print("PATH: %s", pathArr)
-    ED25519 = BIP32Ed25519()
-    node = ED25519.derive_mnemonic2(pathArr, u'your 24 or so seed words go here')
+	# This is a sample seed key, nothing to find there ;)
+    node = BIP32Ed25519().derive_mnemonic(pathArr, u'autumn valve banner happy sentence scan supreme major barrel brief snack toddler dizzy bronze science bunker trust wait dinosaur upper reward fruit bottom royal')
     ((kL, kR), A, c) = node
-    print("Private key:%s" %  base64.b64encode(kL))
-    print("  kR:%s");
+	# No need to tmkms import, this is the 32B key you can place raw inside the key file
+    print("Private key: ", base64.b64encode(kL))
+    print("*************************************")
